@@ -1,0 +1,15 @@
+Package: Project3MATH5773
+Type: Package
+Title: Analyzes the validity of a MLR model applied to a given dataset
+Version: 0.1.0
+Author: Sanjida Ferdousi
+Maintainer: Sanjida Ferdousi <sanjida.ferdousi-1@ou.edu>
+Description: This function analyzes the validity of a MLR model applied to a given dataset. It fits and compares a reduced model (without interactions) and a full model (with two-way interactions) providing statistical summaries, residual plots, and checks for normality and equality of variances.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -1,0 +1,19 @@
+---
+title: "Explanation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explanation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Project3MATH5773)
+```
