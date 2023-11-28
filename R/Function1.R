@@ -4,6 +4,12 @@
 #' @param dep_var A string of the dependent variable.
 #' @param ind_vars A vector of strings of the independent variables names.
 #'
+#' @description
+#' To use the function, call it with a data frame, the name of the dependent variable,
+#' and a vector of independent variable names. The function then performs the specified
+#' analyses and returns a comprehensive list of results and plots.
+#'
+#'
 #' @return A list containing the following components:
 #'   \itemize{
 #'     \item{reduced}{
@@ -38,8 +44,21 @@
 #' X1 = rnorm(50, mean = 5, sd = 2),
 #' X2 = sample(c("A", "B", "C"), 50, replace = TRUE))
 #' results <- analyze_mlr_model(data, "Y", c("X1", "X2"))
+#' data2 <- data.frame(
+#' Y2 = rnorm(100, mean = 30, sd = 20),
+#' X12 = rep(rnorm(10, mean = 2, sd = 1), each = 10),
+#' X22 = rep(sample(c("A", "B", "C", "D"), 25, replace = TRUE), each = 4))
+#' results <- analyze_mlr_model(data2, "Y2", c("X12", "X22"))
 #'
 analyze_mlr_model <- function(df, dep_var, ind_vars) {
+
+  if (!dep_var %in% names(df)) {
+    stop("Dependent variable not found in the data frame.")
+  }
+
+  if (any(!ind_vars %in% names(df))) {
+    stop("One or more independent variables not found in the data frame.")
+  }
 
   df <- df[, c(dep_var, ind_vars)]
 
@@ -66,7 +85,7 @@ analyze_mlr_model <- function(df, dep_var, ind_vars) {
 
   hist(model_reduced$residuals,
        main="Histogram of Residuals for reduced model",
-       xlab="Residuals", col="lightblue", border="black")
+       xlab="Residuals", col=rainbow(4), border="black")
 
 
   #Full model
@@ -80,7 +99,7 @@ analyze_mlr_model <- function(df, dep_var, ind_vars) {
 
   hist(model_full$residuals,
        main="Histogram of Residuals for full model",
-       xlab="Residuals", col="navyblue", border="black")
+       xlab="Residuals", col=rainbow(5), border="black")
 
 
 

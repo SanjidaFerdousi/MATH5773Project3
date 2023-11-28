@@ -1,7 +1,13 @@
-#' Bootstrapping estimates
+#' Bootstrapping estimates for linear regression models
+#'
+#' @description
+#' This function performs bootstrap estimation for linear regression models.
+#' It calculates bootstrapped estimates of model coefficients, providing point estimates
+#' and confidence intervals.
 #'
 #' @param df A data frame containing the data-set.
-#' @param model A character string specifying the model ("model1" or "model2").
+#' @param dep_var A string specifying the dependent variable.
+#' @param ind_vars A vector of strings specifying the independent variables.
 #' @param iter An integer specifying the number of bootstrap iterations.
 #' @param alpha The significance level for confidence intervals.
 #'
@@ -21,70 +27,63 @@
 #'   MassFlux = runif(100, min = 1, max = 5),
 #'   HeatFlux = runif(100, min = 0, max = 10)
 #' )
-#' out_model1 <- myboot(df = sample_data, model = "model1", iter = 2000, alpha = 0.05)
-#' str(out_model1)
+#' out <- myboot(df = sample_data, dep_var = "Diameter",
+#'   ind_vars = c("MassFlux", "HeatFlux"), iter = 2000, alpha = 0.05)
+#' str(out)
+#' out2 <- myboot(df = sample_data, dep_var = "Density",
+#'   ind_vars = c("MassFlux", "HeatFlux"), iter = 2000, alpha = 0.05)
+#' str(out2)
 #'
-#' out_model2 <- myboot(df = sample_data, model = "model2", iter = 2000, alpha = 0.05)
-#' str(out_model2)
-#'
-#'
+myboot <- function(df, dep_var, ind_vars, iter, alpha) {
 
-myboot <- function(df, model, iter, alpha) {
-  # Define the design matrices for both models
-  if (model == "model1") {
-    X <- model.matrix(Diameter ~ MassFlux + HeatFlux, data = df)
-    y_var <- "Diameter"
-  } else if (model == "model2") {
-    X <- model.matrix(Density ~ MassFlux + HeatFlux, data = df)
-    y_var <- "Density"
-  } else {
-    stop("Invalid model specified.")
+  if (!dep_var %in% names(df)) {
+    stop("Dependent variable not found in the data frame.")
+  }
+  if (any(!ind_vars %in% names(df))) {
+    stop("One or more independent variables not found in the data frame.")
+  }
+  if (!is.numeric(iter) || iter <= 0) {
+    stop("'iter' should be a positive integer.")
+  }
+  if (!is.numeric(alpha) || alpha <= 0 || alpha >= 1) {
+    stop("'alpha' should be a number between 0 and 1.")
   }
 
-  # Initialize matrix to store bootstrapped estimates
-  hbetas <- matrix(NA, nrow = iter, ncol = ncol(X))
 
-  # Function to calculate estimates using bootstrapped samples
+  formula_str <- as.formula(paste(dep_var, "~", paste(ind_vars, collapse = " + ")))
+  X <- model.matrix(formula_str, data = df)
+
+
+  hbetas <- matrix(NA, nrow = iter, ncol = ncol(X))
   bootstrap_estimates <- function() {
     ind <- sample(1:nrow(df), nrow(df), replace = TRUE)
-    y <- df[ind, y_var]
+    y <- df[ind, dep_var]
     X_boot <- X[ind, ]
     beta_hat <- solve(t(X_boot) %*% X_boot) %*% t(X_boot) %*% y
     return(beta_hat)
   }
 
-  # Bootstrap to estimate beta coefficients
   for (j in 1:iter) {
     hbetas[j, ] <- bootstrap_estimates()
   }
 
-  # Calculate point estimates
-  point_estimates <- colMeans(hbetas)
 
-  # Calculate confidence intervals
-  lower_quantile <- (1 - alpha) / 2
-  upper_quantile <- 1 - lower_quantile
-  quantiles <- apply(hbetas, 2, quantile, probs = c(lower_quantile, upper_quantile))
+  point_estimates <- colMeans(hbetas)
+  quantiles <- apply(hbetas, 2, quantile, probs = c((1 - alpha) / 2, 1 - (1 - alpha) / 2))
   ci <- data.frame(Lower = quantiles[1, ], Upper = quantiles[2, ])
 
 
-  # Create histograms
-  layout(matrix(1:ncol(X), nrow = 1,ncol = ncol(X)))
-
-  lab = c("intercept estimate","slope 1 estimate","slope 2 estimate")
-  xax = c(expression(widehat(beta)[0]),expression(widehat(beta)[1]),expression(widehat(beta)[2]))
+  layout(matrix(1:ncol(X), nrow = 1, ncol = ncol(X)))
   for (i in 1:ncol(X)) {
-    hist(hbetas[, i], main = paste("Histogram of", lab[i]), xlab = xax[i])
+    hist(hbetas[, i], main = paste("Histogram of Coefficient", i), xlab = paste("Coefficient", i))
   }
 
-  # Return results as a list
+
   result <- list(
     betas = hbetas,
     point_estimates = point_estimates,
     confidence_intervals = ci
   )
-  invisible(list(hatbetas = hbetas, pointest = bootstrap_estimates))
+
   return(result)
 }
-
-

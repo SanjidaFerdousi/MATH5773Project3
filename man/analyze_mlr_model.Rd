@@ -37,12 +37,19 @@ A list containing the following components:
   }
 }
 \description{
-MLR
+To use the function, call it with a data frame, the name of the dependent variable,
+and a vector of independent variable names. The function then performs the specified
+analyses and returns a comprehensive list of results and plots.
 }
 \examples{
 data <- data.frame(Y = rnorm(50, mean = 50, sd = 10),
 X1 = rnorm(50, mean = 5, sd = 2),
 X2 = sample(c("A", "B", "C"), 50, replace = TRUE))
 results <- analyze_mlr_model(data, "Y", c("X1", "X2"))
+data2 <- data.frame(
+Y2 = rnorm(100, mean = 30, sd = 20),
+X12 = rep(rnorm(10, mean = 2, sd = 1), each = 10),
+X22 = rep(sample(c("A", "B", "C", "D"), 25, replace = TRUE), each = 4))
+results <- analyze_mlr_model(data2, "Y2", c("X12", "X22"))
 
 }

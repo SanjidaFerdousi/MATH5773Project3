@@ -12,4 +12,11 @@ RoxygenNote: 7.2.3
 Suggests: 
     knitr,
     rmarkdown
+Imports:
+    shiny,
+    MCMCpack,
+    coda,
+    ggplot2
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

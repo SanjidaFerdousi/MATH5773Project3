@@ -2,14 +2,16 @@
 % Please edit documentation in R/Function2Boots.R
 \name{myboot}
 \alias{myboot}
-\title{Bootstrapping estimates}
+\title{Bootstrapping estimates for linear regression models}
 \usage{
-myboot(df, model, iter, alpha)
+myboot(df, dep_var, ind_vars, iter, alpha)
 }
 \arguments{
 \item{df}{A data frame containing the data-set.}
 
-\item{model}{A character string specifying the model ("model1" or "model2").}
+\item{dep_var}{A string specifying the dependent variable.}
+
+\item{ind_vars}{A vector of strings specifying the independent variables.}
 
 \item{iter}{An integer specifying the number of bootstrap iterations.}
 
@@ -22,7 +24,9 @@ A list containing:
   \item{confidence_intervals}{A data frame with lower and upper bounds of confidence intervals for model coefficients.}
 }
 \description{
-Bootstrapping estimates
+This function performs bootstrap estimation for linear regression models.
+It calculates bootstrapped estimates of model coefficients, providing point estimates
+and confidence intervals.
 }
 \examples{
 
@@ -33,11 +37,11 @@ sample_data <- data.frame(
   MassFlux = runif(100, min = 1, max = 5),
   HeatFlux = runif(100, min = 0, max = 10)
 )
-out_model1 <- myboot(df = sample_data, model = "model1", iter = 2000, alpha = 0.05)
-str(out_model1)
-
-out_model2 <- myboot(df = sample_data, model = "model2", iter = 2000, alpha = 0.05)
-str(out_model2)
-
+out <- myboot(df = sample_data, dep_var = "Diameter",
+  ind_vars = c("MassFlux", "HeatFlux"), iter = 2000, alpha = 0.05)
+str(out)
+out2 <- myboot(df = sample_data, dep_var = "Density",
+  ind_vars = c("MassFlux", "HeatFlux"), iter = 2000, alpha = 0.05)
+str(out2)
 
 }

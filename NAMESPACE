@@ -2,6 +2,12 @@
 
 export(analyze_mlr_model)
 export(myboot)
+export(performAnalyses)
+export(runMLRShinyApp)
+import(MCMCpack)
+import(coda)
+import(ggplot2)
 import(grDevices)
 import(graphics)
+import(shiny)
 import(stats)
